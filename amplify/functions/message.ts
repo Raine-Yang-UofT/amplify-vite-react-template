@@ -1,6 +1,6 @@
 import { CustomMessageTriggerHandler } from "aws-lambda";
 
-export const handler: CustomMessageTriggerHandler = async (event) => {
+export const messageHandler: CustomMessageTriggerHandler = async (event) => {
     const response = { ...event };
   
     try {
