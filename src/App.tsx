@@ -5,51 +5,52 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 
 const client = generateClient<Schema>();
 
-function createTodo() {
-  client.models.Todo.create({
-    content: window.prompt("Todo content"),
-    isDone: false,
+function createHours(employee: string) {
+  client.models.WorkHour.create({
+    employee: employee,
+    hours: (() => {
+      const input = window.prompt("Enter your work hours");
+      const parsedHours = parseFloat(input ?? "0");
+      return !isNaN(parsedHours) && parsedHours >= 0 ? parsedHours : 0; // Ensure valid, non-negative number
+    })(),
+    date: new Date().toISOString(),
   });
 }
 
-function deleteTodo(id: string) {
-  client.models.Todo.delete({ id });
+function deleteHour(id: string) {
+  client.models.WorkHour.delete({ id });
 }
 
-function setDone(id: string, isDone: boolean) {
-  client.models.Todo.update({ id, isDone });
-}
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [hours, setHours] = useState<Array<Schema["WorkHour"]["type"]>>([]);
   const { user, signOut } = useAuthenticator();
   const [todoIdToDelete, setTodoIdToDelete] = useState("");
 
-  // listen to changes in the Todo model
+  const username: string = user?.signInDetails?.loginId ?? "unknown user";
+
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
+    client.models.WorkHour.observeQuery().subscribe({
+      next: (data) => setHours([...data.items]),
     });
   }, []);
 
   return (
     <main>
-      <h1>{user?.signInDetails?.loginId}'s todos'</h1>
-      <button onClick={createTodo}>+ new</button>
+      <h1>Hello: {username}'</h1>
+      <button onClick={() => createHours(username)}>+ new</button>
       <input
         type="number"
         value={todoIdToDelete}
         onChange={(e) => setTodoIdToDelete(e.target.value)}
         placeholder="Enter todo ID to delete"
       />
-      <button onClick={() => deleteTodo(todoIdToDelete)}>- remove</button>
       <ul>
-        {todos.map((todo) => (
+        {hours.map((hour) => (
           <li
-            key={todo.id}
-            onClick={() => setDone(todo.id, !todo.isDone)} 
-            style={{ textDecoration: todo.isDone ? "line-through" : "none" }}>
-            {todo.content}
+            key={hour.id}
+            onClick={() => deleteHour(hour.id)}>
+            {hour.employee}: worked on {hour.hours} hours on {hour.date}
           </li>
         ))}
       </ul>
