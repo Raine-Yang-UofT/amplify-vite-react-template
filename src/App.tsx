@@ -11,7 +11,7 @@ function createHours(employee: string) {
     hours: (() => {
       const input = window.prompt("Enter your work hours");
       const parsedHours = parseFloat(input ?? "0");
-      return !isNaN(parsedHours) && parsedHours >= 0 ? parsedHours : 0; // Ensure valid, non-negative number
+      return !isNaN(parsedHours) && parsedHours >= 0 ? parsedHours : 0;
     })(),
     date: new Date().toISOString(),
   });
@@ -25,7 +25,6 @@ function deleteHour(id: string) {
 function App() {
   const [hours, setHours] = useState<Array<Schema["WorkHour"]["type"]>>([]);
   const { user, signOut } = useAuthenticator();
-  const [todoIdToDelete, setTodoIdToDelete] = useState("");
 
   const username: string = user?.signInDetails?.loginId ?? "unknown user";
 
@@ -39,12 +38,6 @@ function App() {
     <main>
       <h1>Hello: {username}'</h1>
       <button onClick={() => createHours(username)}>+ new</button>
-      <input
-        type="number"
-        value={todoIdToDelete}
-        onChange={(e) => setTodoIdToDelete(e.target.value)}
-        placeholder="Enter todo ID to delete"
-      />
       <ul>
         {hours.map((hour) => (
           <li
