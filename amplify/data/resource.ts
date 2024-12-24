@@ -11,7 +11,7 @@ const schema = a.schema({
     .model({
       employee: a.string(),
       hours: a.float(),
-      date: a.date(),
+      date: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
 });
